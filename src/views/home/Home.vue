@@ -99,7 +99,7 @@ export default {
     },
 
     nowPosition(position) {
-      this.isShowBackTop = -position.y > 1000
+      this.isShowTabControl = -position.y > this.offsetY
       this.backTopPosition(position)
     },
     tabClick(index) {

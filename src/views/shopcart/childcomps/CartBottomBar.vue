@@ -46,6 +46,10 @@ export default {
 
 <style lang='scss' scoped>
   .bottom-bar {
+    position: fixed;
+    bottom: 49px;
+    left: 0;
+    right: 0;
     height: 40px;
     background-color: #eee;
     display: flex;

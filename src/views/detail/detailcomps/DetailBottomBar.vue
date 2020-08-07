@@ -44,7 +44,10 @@ export default {
     box-shadow: 0 2px 2px 2px rgba($color: #000000, $alpha: 0.2);
     display: flex;
     height: 49px;
-    position: relative;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     text-align: center;
     background-color: #fff;
     .left {

@@ -1,5 +1,5 @@
 <template>
-  <div class="tabbar-item" @click="itemClick" >
+  <div class="tab-bar-item" @click="itemClick" >
     <div v-if="isCheck"><slot name="img-active"></slot></div>
     <div v-else><slot name="img"></slot></div>
     <div :style="activeStyle"><slot name="text"></slot></div>
@@ -38,12 +38,12 @@ export default {
 </script>
 
 <style scoped>
-  .tabbar-item{
+  .tab-bar-item{
     flex: 1;
     text-align: center;
     margin-top: 3px;
   }
-  .tabbar-item img{
+  .tab-bar-item img{
     width: 24px;
     height: 24px;
     vertical-align: middle;

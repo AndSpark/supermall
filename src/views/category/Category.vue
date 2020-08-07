@@ -1,130 +1,128 @@
 <template>
-  <div class="wrapper" ref="wrapper">
-    <div class="content">
-      <ul>
-        <li>aaa1</li>
-        <li>aaa2</li>
-        <li>aaa3</li>
-        <li>aaa4</li>
-        <li>aaa5</li>
-        <li>aaa6</li>
-        <li>aaa7</li>
-        <li>aaa8</li>
-        <li>aaa9</li>
-        <li>aaa10</li>
-        <li>aaa11</li>
-        <li>aaa12</li>
-        <li>aaa13</li>
-        <li>aaa14</li>
-        <li>aaa15</li>
-        <li>aaa16</li>
-        <li>aaa17</li>
-        <li>aaa18</li>
-        <li>aaa19</li>
-        <li>aaa20</li>
-        <li>aaa21</li>
-        <li>aaa22</li>
-        <li>aaa23</li>
-        <li>aaa24</li>
-        <li>aaa25</li>
-        <li>aaa26</li>
-        <li>aaa27</li>
-        <li>aaa28</li>
-        <li>aaa29</li>
-        <li>aaa30</li>
-        <li>aaa31</li>
-        <li>aaa32</li>
-        <li>aaa33</li>
-        <li>aaa34</li>
-        <li>aaa35</li>
-        <li>aaa36</li>
-        <li>aaa37</li>
-        <li>aaa38</li>
-        <li>aaa39</li>
-        <li>aaa40</li>
-        <li>aaa41</li>
-        <li>aaa42</li>
-        <li>aaa43</li>
-        <li>aaa44</li>
-        <li>aaa45</li>
-        <li>aaa46</li>
-        <li>aaa47</li>
-        <li>aaa48</li>
-        <li>aaa49</li>
-        <li>aaa50</li>
-        <li>aaa51</li>
-        <li>aaa52</li>
-        <li>aaa53</li>
-        <li>aaa54</li>
-        <li>aaa55</li>
-        <li>aaa56</li>
-        <li>aaa57</li>
-        <li>aaa58</li>
-        <li>aaa59</li>
-        <li>aaa60</li>
-        <li>aaa61</li>
-        <li>aaa62</li>
-        <li>aaa63</li>
-        <li>aaa64</li>
-        <li>aaa65</li>
-        <li>aaa66</li>
-        <li>aaa67</li>
-        <li>aaa68</li>
-        <li>aaa69</li>
-        <li>aaa70</li>
-        <li>aaa71</li>
-        <li>aaa72</li>
-        <li>aaa73</li>
-        <li>aaa74</li>
-        <li>aaa75</li>
-        <li>aaa76</li>
-        <li>aaa77</li>
-        <li>aaa78</li>
-        <li>aaa79</li>
-        <li>aaa80</li>
-        <li>aaa81</li>
-        <li>aaa82</li>
-        <li>aaa83</li>
-        <li>aaa84</li>
-        <li>aaa85</li>
-        <li>aaa86</li>
-        <li>aaa87</li>
-        <li>aaa88</li>
-        <li>aaa89</li>
-        <li>aaa90</li>
-        <li>aaa91</li>
-        <li>aaa92</li>
-        <li>aaa93</li>
-        <li>aaa94</li>
-        <li>aaa95</li>
-        <li>aaa96</li>
-        <li>aaa97</li>
-        <li>aaa98</li>
-        <li>aaa99</li>
-      </ul>
+  <div class="category">
+    <nav-bar class="category-nav"><div slot="center">商品分类</div></nav-bar>
+    <div class="box">
+      <category-list :list="category" @itemClick="itemClick"></category-list>
+      <scroll class="content" ref="content">
+        <subcategory-list :data="subcategory"></subcategory-list>
+        <tab-control :titles="['流行', '新款', '精选']" @tabClick="tabClick" ref="tabcontrol"></tab-control>
+        <goods-list :goods="goods"/>
+      </scroll>
     </div>
   </div>
 </template>
 
 <script>
-import BScroll from 'better-scroll'
+import NavBar from '@/components/common/navbar/NavBar'
+import CategoryList from '@/views/category/childComps/CategoryList'
+import SubcategoryList from '@/views/category/childComps/SubcategoryList'
+import TabControl from '@/components/content/tabControl/TabControl'
+import GoodsList from '@/components/content/goodsList/GoodsList'
+
+import Scroll from '@/components/common/scroll/Scroll'
+import {getCategory, getSubcategory, getCategoryDetail} from 'network/categoryData'
+import {imgLoadListener} from 'common/mixin'
+
 export default {
   name:'',
   data(){
    return {
-
+     category: [],
+     subcategory: [],
+     subcategoryDetail: {},
+     miniWallkey: 0,
+     goods: [],
+     currentIndex: 0,
+     currentType: 'pop'
    }
   },
-  mounted() {
-    new BScroll(this.$refs.wrapper)
+  components: {
+    CategoryList,
+    NavBar,
+    SubcategoryList,
+    TabControl,
+    GoodsList,
+    Scroll,
+    TabControl,
+    GoodsList
   },
+  mixins: [imgLoadListener],
+  created() {
+    getCategory().then(res => {
+      this.category = res.data.category.list
+    }).then(() => {
+      this.itemClick(this.currentIndex)
+    })
+  },
+  methods: {
+    itemClick(index) {
+      this.currentIndex = index
+      const maitKey = this.category[index].maitKey
+      getSubcategory(maitKey).then(res => {
+        this.subcategory = res.data.list
+        this.miniWallkey = this.category[index].miniWallkey
+        getCategoryDetail(this.miniWallkey, this.currentType).then(res => {
+          this.goods = []
+          for(let item of res){
+            this.goods.push({
+            title: item.title,
+            price: item.price,
+            cfav: item.cfav,
+            image: item.img,
+            iid: item.iid
+            } )
+          }
+        })
+        this.$refs.content.scrollTo(0, 0, 0)
+      })
+      
+    },tabClick(index) {
+      switch (index) {
+        case 0:
+          this.currentType = 'pop'
+          break;
+        case 1:
+          this.currentType = 'new'
+          break
+        case 2:
+          this.currentType = 'sell'
+          break
+      }
+      this.$refs.tabcontrol.currentIndex = index
+      getCategoryDetail(this.miniWallkey, this.currentType).then(res => {
+        this.goods = []
+          for(let item of res){
+            this.goods.push({
+            title: item.title,
+            price: item.price,
+            cfav: item.cfav,
+            image: item.img,
+            iid: item.iid
+            } )
+          }
+        })
+    }
+  }
 }
 </script>
 
-<style scoped>
-  .wrapper {
-    overflow-y: scroll;
-    height: 200px;
-    background-color: red;
+<style lang="scss" scoped>
+  .category {
+    height: calc(100vh - 49px);
+    background-color: #fff;
+    .category-nav {
+      position: relative;
+      background-color: #ff8196;
+      color: #fff;
+    }
+    .box {
+      display: flex;
+      height: calc(100% - 44px);
+      .content {
+        width: calc(100% - 100px);
+        height: calc(100% - 50px)
+      }
+    }
   }
+ 
 </style>

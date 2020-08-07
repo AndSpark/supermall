@@ -3,7 +3,7 @@
     <keep-alive exclude="Detail">
     <router-view></router-view>
     </keep-alive>
-    <main-tab-bar></main-tab-bar>
+    <main-tab-bar class="main-bar"></main-tab-bar>
   </div>
 </template>
 <script>
@@ -16,4 +16,10 @@ export default {
 </script>
 <style lang="scss">
  @import 'assets/css/base.css';
+  .main-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
 </style>
